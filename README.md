@@ -99,7 +99,7 @@ MIT License. 詳細は[LICENSE](LICENSE)ファイルをご覧ください。
 **開発者**：appipinopi 
 **連絡先**：appipinopi@gmail.com  
 **デモ**：[https://Plaguins.github.io/reflex-training-game](https://Plaguins.github.io/reflex-training-game)
-```
+
 
 ### 追加すべきファイル
 
