@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>反射神経トレーニング</title>
+    <title>反射神経トレーニング（マウスロック版）</title>
     <style>
         body {
             font-family: 'Arial', sans-serif;
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
+            min-height: 100vh;
             margin: 0;
             background-color: #f5f5f5;
         }
@@ -23,6 +23,7 @@
             box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
             width: 90%;
             max-width: 600px;
+            margin: 20px 0;
         }
 
         .game-info {
@@ -41,22 +42,15 @@
             border-radius: 10px;
             margin: 1rem 0;
             overflow: hidden;
+            user-select: none;
         }
 
         .target {
             position: absolute;
-            background-color: #ff5252;
             border-radius: 50%;
             cursor: pointer;
-            transition: transform 0.1s, opacity 0.3s;
-        }
-
-        .target:hover {
-            transform: scale(1.05);
-        }
-
-        .target:active {
-            transform: scale(0.95);
+            transition: transform 0.1s;
+            -webkit-tap-highlight-color: transparent;
         }
 
         .btn {
@@ -71,7 +65,7 @@
             margin-top: 1rem;
         }
 
-        .btn:hover {
+        .btn:hover:not(:disabled) {
             background-color: #45a049;
             transform: translateY(-2px);
         }
@@ -81,28 +75,31 @@
             cursor: not-allowed;
         }
 
-        .result {
-            margin-top: 1rem;
-            font-size: 1.2rem;
+        .mode-info {
             font-weight: bold;
-            min-height: 2rem;
+            margin-bottom: 10px;
+            color: #2c3e50;
         }
 
-        .level-indicator {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background-color: rgba(0, 0, 0, 0.7);
-            color: white;
-            padding: 5px 10px;
-            border-radius: 5px;
-            font-size: 0.8rem;
+        .mouse-warning {
+            color: red;
+            font-weight: bold;
+            margin: 10px 0;
+            min-height: 24px;
+        }
+
+        .result {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-top: 1rem;
+            min-height: 2rem;
         }
     </style>
 </head>
 <body>
     <div class="game-container">
         <h1>反射神経トレーニング</h1>
+        <div class="mode-info" id="mode-info">モード: 未選択</div>
         <div class="game-info">
             <p>スコア: <span id="score">0</span></p>
             <p>レベル: <span id="level">1</span></p>
@@ -110,7 +107,11 @@
             <p>最高記録: <span id="high-score">0</span></p>
         </div>
         <div id="game-area"></div>
-        <button id="start-btn" class="btn">ゲーム開始</button>
+        <div class="btn-container">
+            <button id="mouse-btn" class="btn">マウスモード</button>
+            <button id="touch-btn" class="btn">タッチモード</button>
+        </div>
+        <div id="mouse-warning" class="mouse-warning"></div>
         <div id="result" class="result"></div>
     </div>
 
@@ -121,9 +122,13 @@
             const levelDisplay = document.getElementById('level');
             const timeDisplay = document.getElementById('time');
             const highScoreDisplay = document.getElementById('high-score');
-            const startBtn = document.getElementById('start-btn');
+            const mouseBtn = document.getElementById('mouse-btn');
+            const touchBtn = document.getElementById('touch-btn');
+            const modeInfo = document.getElementById('mode-info');
+            const mouseWarning = document.getElementById('mouse-warning');
             const resultDisplay = document.getElementById('result');
             
+            let inputMode = null;
             let score = 0;
             let level = 1;
             let timeLeft = 60;
@@ -133,11 +138,62 @@
             let highScore = localStorage.getItem('highScore') || 0;
             highScoreDisplay.textContent = highScore;
             
-            // ゲーム開始
-            startBtn.addEventListener('click', startGame);
-            
-            function startGame() {
+            // マウスモード選択
+            mouseBtn.addEventListener('click', () => {
                 if (gameActive) return;
+                inputMode = 'mouse';
+                modeInfo.textContent = "モード: マウス (タッチロック有効)";
+                mouseWarning.textContent = "※マウスモードではタッチ操作がブロックされます";
+                lockMouseMode();
+            });
+            
+            // タッチモード選択
+            touchBtn.addEventListener('click', () => {
+                if (gameActive) return;
+                inputMode = 'touch';
+                modeInfo.textContent = "モード: タッチ (マウスも使用可)";
+                mouseWarning.textContent = "";
+                unlockTouchMode();
+            });
+            
+            // マウスモードロック
+            function lockMouseMode() {
+                // タッチイベントをブロック
+                gameArea.style.touchAction = 'none';
+                gameArea.addEventListener('touchstart', blockTouchEvent, { passive: false });
+                
+                // ブラウザ別対策
+                if (navigator.userAgent.includes('Firefox')) {
+                    document.body.style.touchAction = 'none';
+                }
+                if (/^((?!chrome|android).)*safari/i.test(navigator.userAgent)) {
+                    document.addEventListener('touchmove', preventTouch, { passive: false });
+                }
+            }
+            
+            // タッチモードアンロック
+            function unlockTouchMode() {
+                gameArea.style.touchAction = '';
+                gameArea.removeEventListener('touchstart', blockTouchEvent);
+                document.removeEventListener('touchmove', preventTouch);
+            }
+            
+            // イベントブロッカー
+            function blockTouchEvent(e) {
+                e.preventDefault();
+                mouseWarning.textContent = "⚠ マウスモード中はタッチ無効！";
+                setTimeout(() => {
+                    mouseWarning.textContent = "※マウスモードではタッチ操作がブロックされます";
+                }, 2000);
+            }
+            
+            function preventTouch(e) {
+                e.preventDefault();
+            }
+            
+            // ゲーム開始
+            function startGame() {
+                if (!inputMode) return;
                 
                 gameActive = true;
                 score = 0;
@@ -148,7 +204,9 @@
                 levelDisplay.textContent = level;
                 timeDisplay.textContent = timeLeft;
                 resultDisplay.textContent = '';
-                startBtn.disabled = true;
+                mouseBtn.disabled = true;
+                touchBtn.disabled = true;
+                gameArea.innerHTML = '';
                 
                 // ゲームタイマー
                 gameTimer = setInterval(() => {
@@ -160,27 +218,27 @@
                     }
                 }, 1000);
                 
-                // 最初のターゲットを表示
                 spawnTarget();
             }
             
             function spawnTarget() {
                 if (!gameActive) return;
                 
-                // ターゲットのサイズ (レベルが上がるほど小さく)
-                const size = Math.max(20, 80 - level * 5);
+                clearTimeout(targetTimer);
                 
-                // ターゲットの表示時間 (レベルが上がるほど短く)
-                const displayTime = Math.max(500, 2000 - level * 100);
+                // 難易度調整
+                const baseSize = 80;
+                const baseTime = 2000;
+                const size = Math.max(30, baseSize - level * 5);
+                const displayTime = Math.max(500, baseTime - level * 100);
                 
-                // ランダムな位置にターゲットを作成
+                // ターゲット作成
                 const target = document.createElement('div');
                 target.className = 'target';
                 
-                // ゲームエリア内のランダムな位置
+                // ランダム位置
                 const maxX = gameArea.clientWidth - size;
                 const maxY = gameArea.clientHeight - size;
-                
                 const x = Math.floor(Math.random() * maxX);
                 const y = Math.floor(Math.random() * maxY);
                 
@@ -190,14 +248,14 @@
                 target.style.top = `${y}px`;
                 target.style.backgroundColor = getRandomColor();
                 
-                // ターゲットをクリックしたときの処理
-                target.addEventListener('click', () => {
+                // イベントリスナー (モードに応じて設定)
+                const handleHit = () => {
                     if (!gameActive) return;
                     
-                    score += level; // レベルが高いほど得点も高い
+                    score += level;
                     scoreDisplay.textContent = score;
                     
-                    // 10点ごとにレベルアップ
+                    // レベルアップ
                     if (score >= level * 10) {
                         level++;
                         levelDisplay.textContent = level;
@@ -209,22 +267,27 @@
                     
                     target.remove();
                     spawnTarget();
-                });
+                };
+                
+                if (inputMode === 'mouse') {
+                    target.addEventListener('mousedown', handleHit);
+                } else {
+                    // タッチモードではマウスもタッチも受け付ける
+                    target.addEventListener('mousedown', handleHit);
+                    target.addEventListener('touchstart', handleHit, { passive: false });
+                }
                 
                 gameArea.appendChild(target);
                 
-                // 一定時間経過後にターゲットを消す
+                // ターゲット自動消去
                 targetTimer = setTimeout(() => {
                     if (target.parentNode) {
                         target.remove();
-                        
-                        // ターゲットをクリックできなかった場合のペナルティ
                         if (gameActive) {
                             score = Math.max(0, score - 1);
                             scoreDisplay.textContent = score;
+                            spawnTarget();
                         }
-                        
-                        spawnTarget();
                     }
                 }, displayTime);
             }
@@ -233,10 +296,8 @@
                 gameActive = false;
                 clearInterval(gameTimer);
                 clearTimeout(targetTimer);
-                startBtn.disabled = false;
-                
-                // ゲームエリアをクリア
-                gameArea.innerHTML = '';
+                mouseBtn.disabled = false;
+                touchBtn.disabled = false;
                 
                 // ハイスコア更新
                 if (score > highScore) {
@@ -258,6 +319,13 @@
                 ];
                 return colors[Math.floor(Math.random() * colors.length)];
             }
+            
+            // ゲームエリアクリックで開始（モード選択後）
+            gameArea.addEventListener('click', () => {
+                if (!gameActive && inputMode) {
+                    startGame();
+                }
+            });
         });
     </script>
 </body>
