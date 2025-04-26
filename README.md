@@ -1,6 +1,3 @@
-以下は、この反射神経トレーニングゲームのGitHub用README.mdの完全版です。プロジェクトの概要からインストール方法、遊び方までを網羅したテンプレートです。
-
-```markdown
 # 反射神経トレーニングゲーム
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
@@ -43,7 +40,7 @@ cd reflex-training-game
 ```
 
 **または**  
-[ZIPでダウンロード](https://github.com/web-tetris-room/reflex-training-game/releases/tag/V1.1/index.html)して解凍
+[HTMLでダウンロード](https://github.com/web-tetris-room/reflex-training-game/releases/download/V1.1/index.html)して解凍
 
 ## 遊び方
 
