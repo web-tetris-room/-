@@ -109,7 +109,6 @@ MIT License. 詳細は[LICENSE](LICENSE)ファイルをご覧ください。
 
 Shields.ioのバッジはプロジェクトに合わせて変更可能です。例えば：
 
-```markdown
 ![GitHub last commit](https://img.shields.io/github/last-commit/web-tetris-room/reflex-training-game)
 ![GitHub stars](https://img.shields.io/github/stars/web-tetris-room/reflex-training-game)
 ```
