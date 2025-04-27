@@ -98,7 +98,7 @@ MIT License. 詳細は[LICENSE](LICENSE)ファイルをご覧ください。
 
 **開発者**：appipinopi 
 **連絡先**：appipinopi@gmail.com  
-**デモ**：[https://Plaguins.github.io/reflex-training-game](https://Plaguins.github.io/reflex-training-game)
+**デモ**：[https://web-tetris-room.github.io/reflex-training-game](https://web-tetris-room.github.io/reflex-training-game)
 
 
 ### 追加すべきファイル
@@ -112,8 +112,8 @@ MIT License. 詳細は[LICENSE](LICENSE)ファイルをご覧ください。
 Shields.ioのバッジはプロジェクトに合わせて変更可能です。例えば：
 
 ```markdown
-![GitHub last commit](https://img.shields.io/github/last-commit/your-username/reflex-training-game)
-![GitHub stars](https://img.shields.io/github/stars/your-username/reflex-training-game)
+![GitHub last commit](https://img.shields.io/github/last-commit/web-tetris-room/reflex-training-game)
+![GitHub stars](https://img.shields.io/github/stars/web-tetris-room/reflex-training-game)
 ```
 
 このREADMEは、プロジェクトの魅力を効果的に伝えつつ、開発者や貢献者が必要とする情報を網羅しています。画像やデモリンクを追加することで、さらに完成度の高い紹介ページになります。
