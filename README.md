@@ -111,6 +111,5 @@ Shields.ioのバッジはプロジェクトに合わせて変更可能です。�
 
 ![GitHub last commit](https://img.shields.io/github/last-commit/web-tetris-room/reflex-training-game)
 ![GitHub stars](https://img.shields.io/github/stars/web-tetris-room/reflex-training-game)
-```
 
 このREADMEは、プロジェクトの魅力を効果的に伝えつつ、開発者や貢献者が必要とする情報を網羅しています。画像やデモリンクを追加することで、さらに完成度の高い紹介ページになります。
